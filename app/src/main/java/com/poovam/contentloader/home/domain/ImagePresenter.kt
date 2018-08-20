@@ -17,9 +17,9 @@ import java.util.*
  */
 
 
-class UserDetailsPresenter(apiConnection: ApiConnection,
-                           private val onSuccess: ((ArrayList<ImageData>)-> Unit),
-                           private val onError: ((ErrorObject)->Unit)) : Presenter{
+class ImagePresenter(apiConnection: ApiConnection,
+                     private val onSuccess: ((ArrayList<ImageData>)-> Unit),
+                     private val onError: ((ErrorObject)->Unit)) : Presenter{
 
 
     private val imageDataRepository = ImageDataRepository(apiConnection)

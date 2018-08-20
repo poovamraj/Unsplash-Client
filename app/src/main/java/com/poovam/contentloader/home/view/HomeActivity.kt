@@ -12,7 +12,7 @@ import com.poovam.contentloader.home.view.adapter.HomeAdapter
 import com.poovam.contentloader.home.view.view_model.ImageViewModelMapper
 import com.poovam.githubdetails.common.framework.network.ApiConnection
 import com.poovam.githubdetails.common.framework.network.ErrorObject
-import com.poovam.githubdetails.userdetails.domain.UserDetailsPresenter
+import com.poovam.githubdetails.userdetails.domain.ImagePresenter
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_home.*
 
@@ -21,7 +21,7 @@ class HomeActivity : AppCompatActivity() {
 
     lateinit var apiConnection : ApiConnection
 
-    lateinit var userDetailsPresenter : UserDetailsPresenter
+    lateinit var userDetailsPresenter : ImagePresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +30,7 @@ class HomeActivity : AppCompatActivity() {
 
         apiConnection = ContentLoaderApplication.get(this).getApiConnectionInstance()
 
-        userDetailsPresenter = UserDetailsPresenter(apiConnection,this::onSuccess,this::onError)
+        userDetailsPresenter = ImagePresenter(apiConnection,this::onSuccess,this::onError)
 
         userDetailsPresenter.onCreate()
     }
