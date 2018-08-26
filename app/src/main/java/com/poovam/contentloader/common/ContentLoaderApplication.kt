@@ -3,7 +3,7 @@ package com.poovam.contentloader.common
 import android.app.Activity
 import android.app.Application
 import com.poovam.contentloader.BuildConfig
-import com.poovam.githubdetails.common.framework.network.ApiConnection
+import com.poovam.contentloader.common.framework.network.ApiConnection
 import com.poovam.githubdetails.common.framework.network.ApiConnectionImpl
 import com.poovam.githubdetails.common.utilities.logger.AndroidLogger
 import com.poovam.githubdetails.common.utilities.logger.Logger
@@ -32,7 +32,7 @@ class ContentLoaderApplication : Application(){
         logger = AndroidLogger(BuildConfig.DEBUG)
     }
 
-    fun getApiConnectionInstance() : ApiConnection{
+    fun getApiConnectionInstance() : ApiConnection {
         return apiConnection
     }
 
