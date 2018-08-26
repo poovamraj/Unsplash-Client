@@ -32,7 +32,7 @@ class HomeAdapter(private val context: Context,
             setImage(holder,bitmap?.image,images.viewModel[position])
             setProgress(holder,bitmap?.progress)
         },{ e ->
-            setPlaceHolderImage(holder)
+            setImageNotFound(holder)
             imageInteractionListener?.errorOnLoadingImage(AppError(Exception(AppError.ON_IMG_DOWNLOAD)))
         })
 
@@ -55,7 +55,7 @@ class HomeAdapter(private val context: Context,
         }
     }
 
-    private fun setPlaceHolderImage(holder: ListImageView){
+    private fun setImageNotFound(holder: ListImageView){
         holder.imageContainer.scaleType = ImageView.ScaleType.FIT_CENTER
         holder.imageContainer.setImageResource(R.drawable.no_img_found)
     }
