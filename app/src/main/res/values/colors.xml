@@ -3,4 +3,7 @@
     <color name="colorPrimary">#FFFFFF</color>
     <color name="colorPrimaryDark">#FFFFFF</color>
     <color name="colorAccent">#444444</color>
+    <color name="themeOverlay">#66000000</color>
+    <color name="themeWhite">#FFFFFF</color>
+    <color name="themeWhiteText">#E9EBEB</color>
 </resources>

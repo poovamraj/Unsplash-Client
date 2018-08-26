@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Content Loader</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="set_wallpaper_success">Wallpaper has been set successfully</string>
+    <string name="resolution_text">Resolution - %1$d X %2$d</string>
+    <string name="likes_text">Likes - %1$d</string>
+    <string name="unknown_error">Unknown error occurred</string>
+    <string name="not_connected_to_internet">Seems like you are not connected to the internet</string>
+    <string name="error_downloading_usr_img">Error downloading the user image</string>
+    <string name="error_downloading_img">Error downloading the image</string>
 </resources>
