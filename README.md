@@ -2,4 +2,4 @@
 
 Note app is much more smoother. GIF Maker couln't reach the same FPS.
 
-![Unsplash Android App](https://gph.is/2C0wQgH)
+![Unsplash Android App](https://media.giphy.com/media/3mgrfpWerSSDhXdXrw/giphy.gif)
