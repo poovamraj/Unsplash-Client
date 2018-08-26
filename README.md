@@ -1,3 +1,3 @@
 # Unsplash-Client
 
-(https://media.giphy.com/media/etZNsRJG1qBThUYRjy/giphy.gif)
+![Unsplash Android App](https://media.giphy.com/media/etZNsRJG1qBThUYRjy/giphy.gif)
