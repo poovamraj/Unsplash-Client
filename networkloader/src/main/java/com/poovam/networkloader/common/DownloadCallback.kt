@@ -27,10 +27,9 @@ interface DownloadCallback<T> {
     fun failureFromDownload(error: ErrorObject)
     /**
      * Indicate to callback handler any progress update.
-     * @param progressCode must be one of the constants defined in DownloadCallback.Progress.
      * @param percentComplete must be 0-100.
      */
-    fun onProgressUpdate(progressCode: Int, percentComplete: Int)
+    fun onProgressUpdate(percentComplete: Int)
 
     /**
      * Indicates that the download operation has finished. This method is called even if the

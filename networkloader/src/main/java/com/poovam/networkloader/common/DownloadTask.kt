@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.AsyncTask
 import com.poovam.networkloader.common.cache.Cache
+import com.poovam.networkloader.common.cache.GenericCache
 import com.poovam.networkloader.error.ErrorObject
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -18,27 +19,11 @@ import javax.net.ssl.HttpsURLConnection
  * Created by poovam-5255 on 8/18/2018.
  * The download logic lies here
  */
-abstract class DownloadTask<E>(private val callback: DownloadCallback<E>,private val networkInfo: NetworkInfo,private val connectionParam: ConnectionParam) : AsyncTask<String, Int, DownloadTask.Result<E>?>() {
-
-    /**
-     * Wrapper class that serves as a union of a result value and an exception. When the download
-     * task has completed, either the result value or exception can be a non-null value.
-     * This allows you to pass exceptions to the UI thread that were thrown during doInBackground().
-     */
-    class Result<E> {
-        constructor(mResultValue: E?){
-            this.mResultValue = mResultValue
-        }
-        constructor(mException: Exception){
-            this.mException = mException
-        }
-        var mResultValue: E? = null
-        var mException: Exception? = null
-    }
+abstract class DownloadTask<E>(private val callback: DownloadCallback<E>,private val networkInfo: NetworkInfo?,private val connectionParam: ConnectionParam) : AsyncTask<String, Int, Result<E>?>() {
 
     override fun onPreExecute() {
         super.onPreExecute()
-        if (!networkInfo.isConnected || (networkInfo.type != ConnectivityManager.TYPE_WIFI &&
+        if (networkInfo == null || !networkInfo.isConnected || (networkInfo.type != ConnectivityManager.TYPE_WIFI &&
                 networkInfo.type != ConnectivityManager.TYPE_MOBILE)) {
             callback.failureFromDownload(ErrorObject(NetworkErrorException()))
             cancel(true)
@@ -46,13 +31,14 @@ abstract class DownloadTask<E>(private val callback: DownloadCallback<E>,private
     }
 
     override fun doInBackground(vararg urls: String?): Result<E>?{
+
         if (!isCancelled && urls.isNotEmpty()) {
             val urlString = urls[0]
             return try {
                 if(urlString != null){
-                    val cached = getCache().get(urlString)
-                    if (connectionParam.canGetFromCache && cached != null) {
-                        return Result(cached)
+                    if (connectionParam.canGetFromCache) {
+                        val cachedValue = getFromCache(urlString)
+                        if(cachedValue != null) return cachedValue
                     }
 
                     val url = URL(urlString)
@@ -61,7 +47,7 @@ abstract class DownloadTask<E>(private val callback: DownloadCallback<E>,private
                         val response = returnValue(result)
                         val resultValue = response.mResultValue
                         if(connectionParam.addToCache && resultValue!= null){
-                            getCache().put(urlString,resultValue)
+                            putIntoCache(urlString,result)
                         }
                         response
                     } else {
@@ -115,11 +101,11 @@ abstract class DownloadTask<E>(private val callback: DownloadCallback<E>,private
             if (responseCode != HttpsURLConnection.HTTP_OK) {
                 throw IOException("HTTP error code: " + responseCode)
             }
-
+            val completeFileSize = connection.contentLength
             stream = connection.inputStream
             publishProgress(DownloadCallback.Progress.GET_INPUT_STREAM_SUCCESS, 0)
             if (stream != null) {
-                result = readStream(stream)
+                result = readStream(stream,completeFileSize)
             }
         } finally {
             if (stream != null) {
@@ -134,14 +120,18 @@ abstract class DownloadTask<E>(private val callback: DownloadCallback<E>,private
 
 
     @Throws(IOException::class, UnsupportedEncodingException::class)
-    private fun readStream(stream: InputStream): ByteArray {
+    private fun readStream(stream: InputStream, contentLength: Int): ByteArray {
         val buffer = ByteArrayOutputStream()
 
         var nRead = 0
         val data = ByteArray(16384)
-
+        var downloadedFileSize = 0
         while ({nRead = stream.read(data, 0, data.size); nRead}() != -1) {
+            downloadedFileSize += nRead
             buffer.write(data, 0, nRead)
+            if(contentLength > 0){
+                callback.onProgressUpdate(((downloadedFileSize.toDouble() / contentLength.toDouble()) * 100).toInt() )
+            }
         }
 
         buffer.flush()
@@ -149,7 +139,40 @@ abstract class DownloadTask<E>(private val callback: DownloadCallback<E>,private
         return buffer.toByteArray()
     }
 
+    private fun putIntoCache(urlString: String, result: ByteArray){
+        val cache = getCache()
+        if(cache != null){
+            val resultValue = returnValue(result).mResultValue
+            if(resultValue != null){
+                cache.put(urlString,resultValue)
+            }
+        }else{
+            GenericCache().put(urlString,result)
+        }
+    }
+
+    private fun getFromCache(urlString: String): Result<E>?{
+        val cache = getCache()
+        if(cache == null){
+            val cached = cache?.get(urlString)
+            if(cached!=null){
+                return Result(cached)
+            }
+        }else{
+            val cached = GenericCache().get(urlString)
+            if(cached != null){
+                return returnValue(cached)
+            }
+        }
+        return null
+    }
+
     abstract fun returnValue(response: ByteArray): Result<E>
 
-    abstract fun getCache(): Cache<E>
+    /**
+    returning null uses generic cache
+    if no cache should be used at any cost,
+    intercept the ##ConnectionParam and set canGetFromCache = false && addToCache = false.
+     */
+    abstract fun getCache(): Cache<E>?
 }
