@@ -7,12 +7,12 @@ import com.poovam.networkloader.common.cache.Cache
 /**
  * Created by poovam-5255 on 8/20/2018.
  */
-class BitmapMemoryCache : Cache<Bitmap> {
+class BitmapMemoryCache(maxCacheSizeInBytes: Long? = null) : Cache<Bitmap> {
 
     private val cache: LruCache<String, Bitmap>
 
     init {
-        val maxMemory: Long = Runtime.getRuntime().maxMemory() / 1024
+        val maxMemory: Long = maxCacheSizeInBytes ?: Runtime.getRuntime().maxMemory() / 1024
         val cacheSize: Int = (maxMemory / 4).toInt()
 
         cache = object : LruCache<String, Bitmap>(cacheSize) {
