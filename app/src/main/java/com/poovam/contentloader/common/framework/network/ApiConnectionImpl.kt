@@ -14,12 +14,12 @@ import io.reactivex.Observable
 /**
  * Created by poovam-5255 on 8/5/2018.
  */
-class ApiConnectionImpl(context: Context) : ApiConnection {
+class ApiConnectionImpl(private val context: Context) : ApiConnection {
 
-    private var requestQueue = Loader(context)
+    private var requestQueue = Loader.getInstance()
 
     override fun doGetRequest(url: String, listener: ApiConnection.ConnectionEventListener<String>) {
-        requestQueue.executeStringRequestAsync(url,object : DownloadCallback<String>{
+        requestQueue?.executeStringRequestAsync(context,url,object : DownloadCallback<String>{
             override fun successFromDownload(result: String?) {
                 listener.onSuccess(result ?: "")
             }
@@ -42,7 +42,7 @@ class ApiConnectionImpl(context: Context) : ApiConnection {
     override fun getImage(url: String): Observable<ImageBitmapWithProgress?>?{
         return Observable
                 .create{ emitter ->
-            requestQueue.executeBitmapRequestAsync(url,
+            requestQueue?.executeBitmapRequestAsync(context,url,
                     object : DownloadCallback<Bitmap>{
                         override fun successFromDownload(result: Bitmap?) {
                             if(result != null)
