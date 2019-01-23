@@ -13,7 +13,7 @@ import io.reactivex.schedulers.Schedulers
 class ImageRepository(private val apiConnection: ApiConnection){
 
     fun loadImage(url:String): Observable<ImageBitmapWithProgress?>? {
-        return apiConnection.getImage(url)?.observeOn(AndroidSchedulers.mainThread())?.subscribeOn(Schedulers.newThread())
+        return apiConnection.getImage(url)?.subscribeOn(Schedulers.newThread())?.observeOn(AndroidSchedulers.mainThread())
     }
 
 }
